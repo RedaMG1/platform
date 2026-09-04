@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, Search, X } from "lucide-react";
 import { useState } from "react";
 import { Logo } from "./logo";
@@ -14,6 +15,15 @@ const navigation = [
 
 export function SiteHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  function isActiveLink(href: string) {
+    if (href === "/courses") {
+      return pathname.startsWith("/courses") || pathname.startsWith("/lesson");
+    }
+
+    return pathname.startsWith(href);
+  }
 
   return (
     <header className="site-header">
@@ -22,7 +32,11 @@ export function SiteHeader() {
 
         <nav className="desktop-navigation" aria-label="Main navigation">
           {navigation.map((item) => (
-            <Link key={item.href} href={item.href}>
+            <Link
+              key={item.href}
+              href={item.href}
+              className={isActiveLink(item.href) ? "is-active" : undefined}
+            >
               {item.label}
             </Link>
           ))}
@@ -60,6 +74,7 @@ export function SiteHeader() {
             <Link
               key={item.href}
               href={item.href}
+              className={isActiveLink(item.href) ? "is-active" : undefined}
               onClick={() => setIsMenuOpen(false)}
             >
               {item.label}

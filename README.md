@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Forma homepage + working courses + lesson workspace
 
-## Getting Started
+This package contains:
 
-First, run the development server:
+- The approved Forma homepage
+- A searchable and filterable `/courses` page
+- Dynamic course overview pages at `/courses/[slug]`
+- The responsive deltoid lesson at `/lesson/deltoid`
+- Working navigation between all three levels
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Copy the `app` and `components` folders into the root of your existing
+`platform` project. Allow Windows to merge the folders and replace the existing
+files when prompted.
+
+Replace:
+
+- `app/layout.tsx`
+- `app/page.tsx`
+- `app/globals.css`
+- `components/site-header.tsx`
+- `components/lesson-workspace.tsx`
+
+Add:
+
+- `components/logo.tsx`
+- `components/site-footer.tsx`
+- `components/courses-catalog.tsx`
+- `components/course-overview.tsx`
+- `data/courses.ts`
+- `app/courses/page.tsx`
+- `app/courses/[slug]/page.tsx`
+- `app/lesson/deltoid/page.tsx`
+
+The project already has the only additional dependency required:
+
+```powershell
+npm install lucide-react
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then run:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```powershell
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open:
 
-## Learn More
+```text
+http://localhost:3000/courses
+http://localhost:3000/courses/upper-limb-anatomy
+http://localhost:3000/lesson/deltoid
+```
 
-To learn more about Next.js, take a look at the following resources:
+The homepage body-region cards now open `/courses` with the selected region
+filter. Every course card opens a working overview. Upper Limb Anatomy is the
+first available course and its start buttons open the deltoid lesson. Other
+courses are honestly labelled `Coming soon`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+All content still uses frontend mock data. Payload CMS and PostgreSQL will be
+connected later.

@@ -18,24 +18,28 @@ const regions = [
   {
     number: "01",
     title: "Head & neck",
+    slug: "head-neck",
     description: "Skull, cranial nerves and cervical structures",
     tone: "violet",
   },
   {
     number: "02",
     title: "Upper limb",
+    slug: "upper-limb",
     description: "Shoulder, arm, forearm and hand",
     tone: "coral",
   },
   {
     number: "03",
     title: "Thorax",
+    slug: "thorax",
     description: "Heart, lungs, chest wall and mediastinum",
     tone: "blue",
   },
   {
     number: "04",
     title: "Lower limb",
+    slug: "lower-limb",
     description: "Hip, thigh, leg, ankle and foot",
     tone: "amber",
   },
@@ -140,7 +144,7 @@ export default function HomePage() {
         <div className="region-grid">
           {regions.map((region) => (
             <Link
-              href={`/courses?region=${encodeURIComponent(region.title)}`}
+              href={`/courses?region=${region.slug}`}
               className={`region-card region-card--${region.tone}`}
               key={region.title}
             >
