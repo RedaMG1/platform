@@ -174,7 +174,7 @@ export function CoursesCatalog({ initialRegion }: CoursesCatalogProps) {
   );
 }
 
-function CourseCard({ course }: { course: Course }) {
+export function CourseCard({ course }: { course: Course }) {
   return (
     <Link
       href={`/courses/${course.slug}`}
