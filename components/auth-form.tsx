@@ -143,7 +143,10 @@ export function AuthForm({ mode }: AuthFormProps) {
           </label>
 
           <label className="auth-field">
-            <span>Password</span>
+            <span className="auth-field__label-row">
+              Password
+              {isLogin && <Link href="/forgot-password">Forgot password?</Link>}
+            </span>
             <span className="auth-field__input">
               <Lock size={17} />
               <input
