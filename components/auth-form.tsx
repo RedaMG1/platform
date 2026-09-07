@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Check, Lock, Mail, ShieldCheck, User } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowRight, Check, Lock, Mail, ShieldAlert, ShieldCheck, User } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
 type AuthFormProps = {
@@ -14,13 +15,76 @@ const benefits = [
   "Free preview lessons on every learning path",
 ];
 
-export function AuthForm({ mode }: AuthFormProps) {
-  const [submitted, setSubmitted] = useState(false);
-  const isLogin = mode === "login";
+function extractErrorMessage(payload: unknown): string {
+  if (
+    payload &&
+    typeof payload === "object" &&
+    "errors" in payload &&
+    Array.isArray((payload as { errors: unknown }).errors)
+  ) {
+    const errors = (payload as { errors: unknown[] }).errors;
+    const first = errors[0] as {
+      message?: string;
+      data?: { errors?: { message?: string }[] };
+    };
+    return first?.data?.errors?.[0]?.message ?? first?.message ?? "Something went wrong.";
+  }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  return "Something went wrong.";
+}
+
+export function AuthForm({ mode }: AuthFormProps) {
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const isLogin = mode === "login";
+  const router = useRouter();
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSubmitted(true);
+    setError(null);
+    setIsSubmitting(true);
+
+    const formData = new FormData(event.currentTarget);
+    const email = String(formData.get("email"));
+    const password = String(formData.get("password"));
+    const name = String(formData.get("name") ?? "");
+
+    try {
+      if (!isLogin) {
+        const registerRes = await fetch("/api/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password, name }),
+        });
+
+        if (!registerRes.ok) {
+          setError(extractErrorMessage(await registerRes.json()));
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
+      // Registration doesn't establish a session on its own, so both flows
+      // finish with a real login call.
+      const loginRes = await fetch("/api/users/login", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!loginRes.ok) {
+        setError(extractErrorMessage(await loginRes.json()));
+        setIsSubmitting(false);
+        return;
+      }
+
+      router.push("/dashboard");
+      router.refresh();
+    } catch {
+      setError("Couldn't reach the server. Check your connection and try again.");
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -59,56 +123,53 @@ export function AuthForm({ mode }: AuthFormProps) {
             : "Start with free lessons, upgrade any time."}
         </p>
 
-        {submitted ? (
-          <div className="auth-notice">
-            <ShieldCheck size={18} />
+        <form className="auth-form" onSubmit={handleSubmit}>
+          {!isLogin && (
+            <label className="auth-field">
+              <span>Full name</span>
+              <span className="auth-field__input">
+                <User size={17} />
+                <input type="text" name="name" placeholder="Jordan Ade" required />
+              </span>
+            </label>
+          )}
+
+          <label className="auth-field">
+            <span>Email address</span>
+            <span className="auth-field__input">
+              <Mail size={17} />
+              <input type="email" name="email" placeholder="you@email.com" required />
+            </span>
+          </label>
+
+          <label className="auth-field">
+            <span>Password</span>
+            <span className="auth-field__input">
+              <Lock size={17} />
+              <input
+                type="password"
+                name="password"
+                placeholder="********"
+                minLength={8}
+                required
+              />
+            </span>
+          </label>
+
+          <button type="submit" className="button auth-submit" disabled={isSubmitting}>
+            {isSubmitting ? "Please wait..." : isLogin ? "Log in" : "Create account"}
+            <ArrowRight size={17} />
+          </button>
+        </form>
+
+        {error && (
+          <div className="auth-notice auth-notice--error">
+            <ShieldAlert size={18} />
             <div>
-              <strong>Accounts aren&apos;t live yet</strong>
-              <p>
-                This is a UI preview, sign-in and billing will be connected
-                once the backend is in place.
-              </p>
+              <strong>{isLogin ? "Couldn't log in" : "Couldn't create account"}</strong>
+              <p>{error}</p>
             </div>
           </div>
-        ) : (
-          <form className="auth-form" onSubmit={handleSubmit}>
-            {!isLogin && (
-              <label className="auth-field">
-                <span>Full name</span>
-                <span className="auth-field__input">
-                  <User size={17} />
-                  <input type="text" name="name" placeholder="Jordan Ade" required />
-                </span>
-              </label>
-            )}
-
-            <label className="auth-field">
-              <span>Email address</span>
-              <span className="auth-field__input">
-                <Mail size={17} />
-                <input type="email" name="email" placeholder="you@email.com" required />
-              </span>
-            </label>
-
-            <label className="auth-field">
-              <span>Password</span>
-              <span className="auth-field__input">
-                <Lock size={17} />
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="********"
-                  minLength={8}
-                  required
-                />
-              </span>
-            </label>
-
-            <button type="submit" className="button auth-submit">
-              {isLogin ? "Log in" : "Create account"}
-              <ArrowRight size={17} />
-            </button>
-          </form>
         )}
 
         <p className="auth-switch">
