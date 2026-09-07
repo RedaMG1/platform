@@ -3207,6 +3207,15 @@ a:focus-visible {
   line-height: 1.6;
 }
 
+.auth-notice--error {
+  background: var(--color-coral-soft);
+  color: #b3402f;
+}
+
+.auth-notice--error strong {
+  color: #b3402f;
+}
+
 .auth-form {
   display: flex;
   margin-top: 28px;

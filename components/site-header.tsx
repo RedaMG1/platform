@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, Search, X } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { LogOut, Menu, Search, X } from "lucide-react";
 import { useState } from "react";
 import { Logo } from "./logo";
 
@@ -13,9 +13,30 @@ const navigation = [
   { label: "Pricing", href: "/pricing" },
 ];
 
-export function SiteHeader() {
+type SiteHeaderProps = {
+  user: { name?: string | null; email: string } | null;
+};
+
+export function SiteHeader({ user }: SiteHeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+
+  async function handleLogout() {
+    setIsLoggingOut(true);
+    try {
+      await fetch("/api/users/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } finally {
+      setIsLoggingOut(false);
+      setIsMenuOpen(false);
+      router.push("/");
+      router.refresh();
+    }
+  }
 
   function isActiveLink(href: string) {
     if (href === "/courses") {
@@ -50,12 +71,26 @@ export function SiteHeader() {
           >
             <Search size={19} />
           </Link>
-          <Link href="/login" className="header-login">
-            Log in
-          </Link>
-          <Link href="/register" className="button button--small">
-            Start learning
-          </Link>
+          {user ? (
+            <button
+              type="button"
+              className="header-login"
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+            >
+              <LogOut size={16} />
+              Log out
+            </button>
+          ) : (
+            <>
+              <Link href="/login" className="header-login">
+                Log in
+              </Link>
+              <Link href="/register" className="button button--small">
+                Start learning
+              </Link>
+            </>
+          )}
           <button
             type="button"
             className="mobile-menu-button"
@@ -80,16 +115,24 @@ export function SiteHeader() {
               {item.label}
             </Link>
           ))}
-          <Link href="/login" onClick={() => setIsMenuOpen(false)}>
-            Log in
-          </Link>
-          <Link
-            href="/register"
-            className="button"
-            onClick={() => setIsMenuOpen(false)}
-          >
-            Start learning
-          </Link>
+          {user ? (
+            <button type="button" onClick={handleLogout} disabled={isLoggingOut}>
+              Log out
+            </button>
+          ) : (
+            <>
+              <Link href="/login" onClick={() => setIsMenuOpen(false)}>
+                Log in
+              </Link>
+              <Link
+                href="/register"
+                className="button"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Start learning
+              </Link>
+            </>
+          )}
         </nav>
       )}
     </header>
