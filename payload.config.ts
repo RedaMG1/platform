@@ -1,4 +1,5 @@
 import { postgresAdapter } from "@payloadcms/db-postgres"
+import { resendAdapter } from "@payloadcms/email-resend"
 import { lexicalEditor } from "@payloadcms/richtext-lexical"
 import { s3Storage } from "@payloadcms/storage-s3"
 import path from "path"
@@ -17,7 +18,10 @@ import { Users } from "./collections/Users"
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+const serverURL = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:3000"
+
 export default buildConfig({
+  serverURL,
   admin: {
     user: Users.slug,
     importMap: {
@@ -27,6 +31,14 @@ export default buildConfig({
   collections: [Users, Media, Structures, Courses, Modules, Lessons, Quizzes],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
+  // Resend's shared onboarding@resend.dev sender works with no domain setup —
+  // switch defaultFromAddress once a production domain is verified in Resend.
+  email: resendAdapter({
+    apiKey: process.env.RESEND_API_KEY || "",
+    defaultFromAddress: "onboarding@resend.dev",
+    defaultFromName: "Forma",
+    overrideRecipientAddress: "atay.mdg@gmail.com", // TEMP: proving real delivery works
+  }),
   typescript: {
     outputFile: path.resolve(dirname, "payload-types.ts"),
   },

@@ -4,15 +4,17 @@ Last updated: 2026-09-07
 
 ## Where things stand
 
-**Steps 1 ("get Payload running") and most of step 3 ("real auth") are done and verified.**
+**Steps 1 ("get Payload running") and 3 ("real auth + email provider") are done and verified.**
 Working folder: `C:\Users\elalaoui\Desktop\Atay\mdg\03\platform` (the older
 `C:\Users\elalaoui\Desktop\Atay\mdg\platform`, no `\03\`, was abandoned — do not use it).
 
 Verified live, not just "ran without erroring":
 - `forma-postgres` (Postgres 16, Docker Compose, port `5433`) — up and healthy
 - Next.js dev server + Payload admin at `http://localhost:3000/admin` — loads clean, no console errors
-- First admin user — email `mreda.elalaoui1@gmail.com`, password is a generated
-  placeholder (`xi6R5ANOJVfemA02` — change it, or at least save it somewhere real).
+- First admin user — email `mreda.elalaoui1@gmail.com`. Password was changed during
+  live testing of the reset-password flow — the old generated placeholder no longer
+  works (confirmed: 401). New password is `NewAdminPassword456!` — save this somewhere
+  real, or reset it to your own via `/forgot-password`.
   **Now correctly `role: admin`** (see the access-control note below for why this needed fixing).
 - `payload-types.ts` generated (664 lines) from the 7 collections with no errors
 - Seed script run and checked directly against Postgres (not just log output):
@@ -23,6 +25,13 @@ Verified live, not just "ran without erroring":
   visitors to `/login`
 - **Access control locked down on all 7 collections** — see below, this was a real gap
   I found and fixed, not part of the original plan
+- **Real password-reset email, tested end-to-end** — Resend wired via
+  `@payloadcms/email-resend`, custom-branded reset link pointing at Forma's own
+  `/reset-password` page (not Payload's internal `/admin/reset/:token`). Verified live:
+  triggered a real reset, got a real email, obtained a token, submitted the new
+  password through the actual page, got redirected to `/dashboard` already logged in,
+  then logged out and back in with the new password to prove it actually changed —
+  and confirmed the *old* password now gets rejected (401)
 
 ## Decisions locked in
 
@@ -68,27 +77,35 @@ account had this exact `student`-role problem and got locked out by my own fix**
 fixed by promoting it directly in Postgres (the one legitimate reason to bypass the
 API here, since no admin existed yet to authorize the change through it).
 
+**Email adapter caveat — important**: Resend's sandbox mode (no domain verified yet)
+only allows delivery to the email the Resend account itself was signed up with
+(`atay.mdg@gmail.com`). `payload.config.ts` currently has
+`overrideRecipientAddress: "atay.mdg@gmail.com"` set, which means **every
+password-reset email — for any user — currently lands in that one inbox**, not the
+real requester's. This is deliberate for continued testing, not a bug, but it means
+forgot-password isn't actually usable by real users yet. Fix: verify a domain at
+resend.com/domains once one is chosen, then remove `overrideRecipientAddress` and
+change `defaultFromAddress` off `onboarding@resend.dev`.
+
 ## Known, deliberately deferred (not oversights)
 
-- No email adapter — password reset is currently a silent no-op (confirmed: Payload
-  logs "No email adapter provided" and writes reset emails to the console instead of
-  sending them). Needs a provider decision (Resend/Postmark/SES) before it can work.
+- Resend domain not verified — see the email adapter caveat above
 - No Stripe fields on Users, no `lesson_progress`, `quiz_attempts`, or `webhook_events` tables
 - No paywall enforcement on lesson *content* (the `access: free|premium` field exists,
   and drafts are now hidden from non-admins, but a `premium` lesson's full body still
   ships to anyone who can read it — field-level stripping isn't built yet)
 - FK `onDelete` behavior on the relationships that do exist — not yet verified
+- No email verification required at registration (deliberate choice — can be added
+  later as a config flip, doesn't need a migration)
 
 These all match the architecture doc's own step ordering (they're steps 4–6), not gaps
 that were missed at this step.
 
 ## Next step
 
-Two candidates, your call:
-- **Finish step 3**: pick a transactional email provider and wire real forgot-password
-- **Step 2**: rewire the frontend off the static `data/courses.ts` / `data/structures.ts`
-  files and onto Payload's Local API. Touches `courses-catalog.tsx`, `lesson-workspace.tsx`,
-  `course-overview.tsx`, `atlas-browser.tsx`
+**Step 2**: rewire the frontend off the static `data/courses.ts` / `data/structures.ts`
+files and onto Payload's Local API. Touches `courses-catalog.tsx`, `lesson-workspace.tsx`,
+`course-overview.tsx`, `atlas-browser.tsx`.
 
 ## Reference
 

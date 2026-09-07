@@ -3229,6 +3229,18 @@ a:focus-visible {
   gap: 7px;
 }
 
+.auth-field__label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.auth-field__label-row a {
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 12.5px;
+}
+
 .auth-field > span:first-child {
   color: var(--color-ink);
   font-size: 12px;
