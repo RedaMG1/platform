@@ -4,7 +4,7 @@
   --color-ink: #17213b;
   --color-muted: #6d7589;
   --color-line: #e4e7ef;
-  --color-paper: #eceef2;
+  --color-paper: #f9fbfe;
   --color-white: #ffffff;
   --color-primary: #6548e8;
   --color-primary-dark: #4f35cd;
@@ -181,6 +181,93 @@ a:focus-visible {
 
 .mobile-navigation {
   display: none;
+}
+
+.user-menu {
+  position: relative;
+}
+
+.user-menu__trigger {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: var(--color-white);
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: box-shadow 160ms ease;
+}
+
+.user-menu__trigger:hover {
+  box-shadow: 0 0 0 3px rgba(101, 72, 232, 0.18);
+}
+
+.user-menu__dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 240px;
+  padding: 8px;
+  border: 1px solid var(--color-line);
+  border-radius: 14px;
+  background: var(--color-white);
+  box-shadow: 0 20px 45px rgba(24, 30, 61, 0.15);
+  z-index: 30;
+}
+
+.user-menu__header {
+  padding: 10px 12px 12px;
+  border-bottom: 1px solid var(--color-line);
+}
+
+.user-menu__header strong {
+  display: block;
+  color: var(--color-ink);
+  font-size: 13px;
+}
+
+.user-menu__header span {
+  display: block;
+  margin-top: 2px;
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+.user-menu__item {
+  display: flex;
+  width: 100%;
+  padding: 10px 12px;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--color-ink);
+  font-size: 13px;
+  font-weight: 650;
+  text-align: left;
+  cursor: pointer;
+  transition: background 140ms ease;
+}
+
+.user-menu__item:hover {
+  background: #f4f4f8;
+}
+
+.user-menu__item svg {
+  color: #8f96a6;
+}
+
+.user-menu__item--danger {
+  color: #c0453a;
+}
+
+.user-menu__item--danger svg {
+  color: #c0453a;
 }
 
 .button {
@@ -2793,22 +2880,35 @@ a:focus-visible {
 }
 
 .course-curriculum__list {
-  border-top: 1px solid var(--color-line);
+  border: 1px solid var(--color-line);
+  border-radius: 18px;
+  background: var(--color-white);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
 }
 
 .course-curriculum details {
   border-bottom: 1px solid var(--color-line);
 }
 
+.course-curriculum details:last-child {
+  border-bottom: 0;
+}
+
 .course-curriculum summary {
   display: grid;
   min-height: 97px;
-  padding: 20px 5px;
+  padding: 20px 24px;
   align-items: center;
   gap: 16px;
   cursor: pointer;
   list-style: none;
   grid-template-columns: 43px 1fr auto 22px;
+  transition: background 140ms ease;
+}
+
+.course-curriculum summary:hover {
+  background: #f8f8fb;
 }
 
 .course-curriculum summary::-webkit-details-marker {
@@ -2863,8 +2963,9 @@ a:focus-visible {
 }
 
 .course-module-content {
-  margin: -3px 0 22px 59px;
+  margin: -3px 24px 22px 83px;
   padding: 18px;
+  border: 1px solid var(--color-line);
   border-radius: 10px;
   background: #f8f8fb;
 }
@@ -3069,7 +3170,8 @@ a:focus-visible {
   }
 
   .course-module-content {
-    margin-left: 0;
+    margin-right: 16px;
+    margin-left: 16px;
   }
 
   .course-overview-cta {
@@ -3696,6 +3798,51 @@ a:focus-visible {
   .dashboard-continue__cover {
     padding: 18px 26px;
   }
+}
+
+/* ---------- Account ---------- */
+
+.account-page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding-top: 52px;
+  padding-bottom: 90px;
+}
+
+.account-page h1 {
+  margin: 10px 0 6px;
+  font-size: clamp(30px, 3.4vw, 40px);
+  letter-spacing: -1.4px;
+}
+
+.account-page > p {
+  margin: 0 0 40px;
+  color: var(--color-muted);
+  font-size: 14px;
+}
+
+.account-card {
+  padding: clamp(24px, 4vw, 36px);
+  border: 1px solid var(--color-line);
+  border-radius: 18px;
+  background: var(--color-white);
+  box-shadow: var(--shadow-card);
+}
+
+.account-card + .account-card {
+  margin-top: 28px;
+}
+
+.account-card h2 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  letter-spacing: -0.6px;
+}
+
+.account-card__subtitle {
+  margin: 0 0 24px;
+  color: var(--color-muted);
+  font-size: 13px;
 }
 
 /* ---------- Atlas ---------- */
