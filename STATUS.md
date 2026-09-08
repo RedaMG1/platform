@@ -47,10 +47,16 @@ Verified live, not just "ran without erroring":
 
 ## What's built
 
-7 collections in `collections/`: `Users`, `Media` (with `imageSizes`), `Structures`,
-`Courses`, `Modules`, `Lessons` (per-course slug uniqueness logic), `Quizzes`.
+8 collections in `collections/`: `Users`, `Media` (with `imageSizes`), `Structures`,
+`Courses`, `Modules`, `Lessons` (per-course slug uniqueness logic), `Quizzes`,
+`ContactSubmissions` (public-create/admin-read only, emails the site owner via Resend
+on every new message — tested live end-to-end, including confirming anonymous users
+can't read others' submissions).
 Plus `payload.config.ts`, the `app/(payload)/` admin route group, `docker-compose.yml`,
 `.env`/`.env.example`, and `scripts/seed.ts`.
+
+**`/contact` page** (`components/contact-form.tsx`) — name/email/message form, linked
+from the site footer.
 
 Frontend routes were moved into `app/(frontend)/` (was flat under `app/` before) —
 this was a required fix, not a style choice: one shared root layout was colliding
