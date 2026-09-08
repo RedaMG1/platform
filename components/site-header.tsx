@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut, Menu, Search, X } from "lucide-react";
+import { Menu, Search, X } from "lucide-react";
 import { useState } from "react";
 import { Logo } from "./logo";
+import { UserMenu } from "./user-menu";
 
 const navigation = [
   { label: "Courses", href: "/courses" },
@@ -73,15 +74,7 @@ export function SiteHeader({ user }: SiteHeaderProps) {
             <Search size={19} />
           </Link>
           {user ? (
-            <button
-              type="button"
-              className="header-login"
-              onClick={handleLogout}
-              disabled={isLoggingOut}
-            >
-              <LogOut size={16} />
-              Log out
-            </button>
+            <UserMenu user={user} />
           ) : (
             <>
               <Link href="/login" className="header-login">
@@ -117,9 +110,14 @@ export function SiteHeader({ user }: SiteHeaderProps) {
             </Link>
           ))}
           {user ? (
-            <button type="button" onClick={handleLogout} disabled={isLoggingOut}>
-              Log out
-            </button>
+            <>
+              <Link href="/account" onClick={() => setIsMenuOpen(false)}>
+                Account settings
+              </Link>
+              <button type="button" onClick={handleLogout} disabled={isLoggingOut}>
+                Log out
+              </button>
+            </>
           ) : (
             <>
               <Link href="/login" onClick={() => setIsMenuOpen(false)}>
