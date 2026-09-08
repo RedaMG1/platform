@@ -7,6 +7,7 @@ import { buildConfig } from "payload"
 import { fileURLToPath } from "url"
 import sharp from "sharp"
 
+import { ContactSubmissions } from "./collections/ContactSubmissions"
 import { Courses } from "./collections/Courses"
 import { Lessons } from "./collections/Lessons"
 import { Media } from "./collections/Media"
@@ -28,7 +29,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Structures, Courses, Modules, Lessons, Quizzes],
+  collections: [Users, Media, Structures, Courses, Modules, Lessons, Quizzes, ContactSubmissions],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   // Resend's shared onboarding@resend.dev sender works with no domain setup —

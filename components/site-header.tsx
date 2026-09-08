@@ -11,6 +11,7 @@ const navigation = [
   { label: "Atlas", href: "/atlas" },
   { label: "Dashboard", href: "/dashboard" },
   { label: "Pricing", href: "/pricing" },
+  { label: "Contact", href: "/contact" },
 ];
 
 type SiteHeaderProps = {
